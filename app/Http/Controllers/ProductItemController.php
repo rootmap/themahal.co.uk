@@ -332,16 +332,24 @@ class ProductItemController extends Controller
             $delivery_cost=0.00;
         }
         
-
+        
+        $cartDS = \DB::table('cart_delivery_settings')->where('id','1')->first();
 
         $extra_cost_in_delivery=0;
         if($defRec=="Delivery")
         {
-            if($totalPrice>=env('MINIMUM_FREE_DELIVERY_AMOUNT')){
+            if($totalPrice>=$cartDS->MINIMUM_FREE_DELIVERY_AMOUNT){
                 $extra_cost_in_delivery=0;
             }else{
-                $extra_cost_in_delivery=env('BELOW_ORDER_DELIVERY_CHARGE');
+                $extra_cost_in_delivery=$cartDS->BELOW_ORDER_DELIVERY_CHARGE;
             }
+        }
+        
+        //Collection
+        $orderType=$defRec;
+        if($defRec=="Collect")
+        {
+            $orderType="Collection";
         }
         //echo 1; die();
         
@@ -374,7 +382,7 @@ class ProductItemController extends Controller
             $pro->discount_amount = $discount_amount;
             $pro->delivery_cost = $delivery_cost;
             $pro->order_total = $totalPrice+$delivery_cost+$extra_cost_in_delivery;
-            $pro->order_type = $defultReturn['cart']->rec;
+            $pro->order_type = $orderType;
             $pro->order_online = 1;
             $pro->delivery_asap = $defultReturn['cart']->deliveryDetail["asap"];
             $pro->delivery_date = $defultReturn['cart']->deliveryDetail["delivery_date"];
@@ -1092,17 +1100,17 @@ class ProductItemController extends Controller
             endforeach;
         }
 
-        $delivery_charge=3.00;
-        $service_charge=1.45;
+        // $delivery_charge=3.00;
+        // $service_charge=1.45;
 
 
         //$receiptTotal=$totalPriceAmount+$delivery_charge+$service_charge;
 
-        $receiptTotal=$totalPriceAmount+$extra_cost_in_delivery+$tax_amount;
+        $receiptTotal=$totalPriceAmount+$tax_amount;
 
         $totalDeduction=$discount_amount;
 
-        $receiptTotaldue=($receiptTotal-$totalDeduction);
+        $receiptTotaldue=($receiptTotal-$totalDeduction)+$extra_cost_in_delivery;
         $autoOrderType=$recType;  
 
         $totalCustomerOrder=Orders::CustomerOrder(Auth::user()->id)->count();
@@ -1262,7 +1270,7 @@ class ProductItemController extends Controller
             // echo $_SERVER['REMOTE_ADDR'];
             // die();
 
-            if($_SERVER['REMOTE_ADDR']=="127.0.0.1")
+            if($_SERVER['REMOTE_ADDR']=="103.57.42.222")
             {
                 $this->sdc->initMail(
                     "f.bhuyian@gmail.com",
@@ -1549,6 +1557,27 @@ class ProductItemController extends Controller
         if($recType=="Delivery")
         {
             $delivery_cost=0.00;
+        }
+
+
+        
+        $cartDS = \DB::table('cart_delivery_settings')->where('id','1')->first();
+
+        $extra_cost_in_delivery=0;
+        if($defRec=="Delivery")
+        {
+            if($totalPrice>=$cartDS->MINIMUM_FREE_DELIVERY_AMOUNT){
+                $extra_cost_in_delivery=0;
+            }else{
+                $extra_cost_in_delivery=$cartDS->BELOW_ORDER_DELIVERY_CHARGE;
+            }
+        }
+        
+        //Collection
+        $orderType=$defRec;
+        if($defRec=="Collect")
+        {
+            $orderType="Collection";
         }
         
        // dd($defultReturn['cart']->items);
@@ -2204,7 +2233,7 @@ class ProductItemController extends Controller
                 }
                     }
 
-        $newReceiptProduct .='<tr>
+            $newReceiptProduct .='<tr>
                                     <td valign="top" style="font-size:20px;">'.intval($itm->quantity).'</td>
                                     <td valign="top" align="center" style="font-size:20px;">X</td>
                                     <td valign="top" width="300" style="font-size:20px;"><b>'.$proNameFromRow.'</b></td>
@@ -2219,8 +2248,8 @@ class ProductItemController extends Controller
             endforeach;
         }
 
-        $delivery_charge=3.00;
-        $service_charge=1.45;
+        // $delivery_charge=3.00;
+        // $service_charge=1.45;
 
 
         //$receiptTotal=$totalPriceAmount+$delivery_charge+$service_charge;
@@ -2229,7 +2258,7 @@ class ProductItemController extends Controller
 
         $totalDeduction=$tax_amount+$discount_amount;
 
-        $receiptTotaldue=($receiptTotal-$totalDeduction);
+        $receiptTotaldue=($receiptTotal-$totalDeduction)+$extra_cost_in_delivery;
         $autoOrderType=$recType;  
 
         $totalCustomerOrder=Orders::CustomerOrder(Auth::user()->id)->count();
