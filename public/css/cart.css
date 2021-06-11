@@ -1,0 +1,51 @@
+.display-none-sec {
+    display: none !important;
+}
+
+.discount-space {
+    display: none;
+}
+
+.cart-item-highlight {
+    font-weight: 600;
+}
+
+.cart-data-mini-box {
+    width: 100%;
+    display: block;
+}
+
+.cart-price-mini-box {
+    display: inline-grid;
+    font-weight: 600;
+}
+
+.cart-price-mini-box>span::before {
+    content: "$";
+    display: inline-grid;
+    font-weight: 600;
+}
+
+.cart-extra-mini-box {
+    width: 150px;
+    display: inline-grid;
+    overflow: hidden;
+    font-weight: bold;
+}
+
+.bgbor {
+    background-color: #F9F9F9;
+    border-bottom: 1px dashed #dddddd;
+    padding: 0px 0px 0px 0px !important;
+    margin-bottom: 0px !important;
+}
+
+.micm_inclusive {
+    right: 39px;
+    font-weight: bold;
+    top: 0px;
+}
+
+.micm_inclusive::before {
+    content: '£';
+}
